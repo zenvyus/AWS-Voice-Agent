@@ -18,24 +18,68 @@ export class SpeechConfig extends Construct {
     // Transcribe custom vocabulary via AwsCustomResource
     const vocabularyPhrases = [
       // IATA Airport Codes - Australia
-      'SYD', 'MEL', 'BNE', 'PER', 'ADL', 'CBR', 'OOL', 'CNS', 'HBA', 'DRW',
+      'SYD',
+      'MEL',
+      'BNE',
+      'PER',
+      'ADL',
+      'CBR',
+      'OOL',
+      'CNS',
+      'HBA',
+      'DRW',
       // New Zealand
-      'AKL', 'WLG', 'CHC', 'ZQN',
+      'AKL',
+      'WLG',
+      'CHC',
+      'ZQN',
       // Asia
-      'SIN', 'HKG', 'NRT', 'HND', 'KIX', 'BKK', 'DPS', 'JKT', 'MNL', 'KUL',
+      'SIN',
+      'HKG',
+      'NRT',
+      'HND',
+      'KIX',
+      'BKK',
+      'DPS',
+      'JKT',
+      'MNL',
+      'KUL',
       // Pacific
-      'NAN', 'APW', 'PPT',
+      'NAN',
+      'APW',
+      'PPT',
       // Europe
-      'LHR', 'CDG', 'FCO',
+      'LHR',
+      'CDG',
+      'FCO',
       // Americas
-      'LAX', 'SFO', 'DFW', 'JFK',
+      'LAX',
+      'SFO',
+      'DFW',
+      'JFK',
       // Fare Classes
-      'First', 'Business', 'Premium-Economy', 'Economy',
+      'First',
+      'Business',
+      'Premium-Economy',
+      'Economy',
       // Fare class letters spoken individually
-      'Foxtrot', 'Juliet', 'Whiskey', 'Yankee', 'Bravo', 'Mike', 'Hotel', 'Quebec',
+      'Foxtrot',
+      'Juliet',
+      'Whiskey',
+      'Yankee',
+      'Bravo',
+      'Mike',
+      'Hotel',
+      'Quebec',
       // Airline terms
-      'booking-reference', 'frequent-flyer', 'fare-class', 'baggage-allowance',
-      'boarding-pass', 'check-in', 'departure-gate', 'connecting-flight',
+      'booking-reference',
+      'frequent-flyer',
+      'fare-class',
+      'baggage-allowance',
+      'boarding-pass',
+      'check-in',
+      'departure-gate',
+      'connecting-flight',
     ].join('\n');
 
     new cr.AwsCustomResource(this, 'TranscribeVocabulary', {

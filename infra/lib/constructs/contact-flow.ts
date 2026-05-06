@@ -10,8 +10,8 @@ export interface ContactFlowProps {
 // Stable UUIDs for contact flow action identifiers
 const ACTION_IDS = {
   invokeBootstrap: 'a1b2c3d4-1111-2222-3333-aaaaaaaaaaaa',
-  playGreeting:    'a1b2c3d4-1111-2222-3333-bbbbbbbbbbbb',
-  disconnect:      'a1b2c3d4-1111-2222-3333-cccccccccccc',
+  playGreeting: 'a1b2c3d4-1111-2222-3333-bbbbbbbbbbbb',
+  disconnect: 'a1b2c3d4-1111-2222-3333-cccccccccccc',
 };
 
 export class ContactFlow extends Construct {
@@ -27,8 +27,8 @@ export class ContactFlow extends Construct {
         EntryPointPosition: { x: 20, y: 20 },
         ActionMetadata: {
           [ACTION_IDS.invokeBootstrap]: { Position: { x: 200, y: 20 } },
-          [ACTION_IDS.playGreeting]:    { Position: { x: 450, y: 20 } },
-          [ACTION_IDS.disconnect]:      { Position: { x: 700, y: 20 } },
+          [ACTION_IDS.playGreeting]: { Position: { x: 450, y: 20 } },
+          [ACTION_IDS.disconnect]: { Position: { x: 700, y: 20 } },
         },
       },
       Actions: [
@@ -41,9 +41,7 @@ export class ContactFlow extends Construct {
           },
           Transitions: {
             NextAction: ACTION_IDS.playGreeting,
-            Errors: [
-              { NextAction: ACTION_IDS.playGreeting, ErrorType: 'NoMatchingError' },
-            ],
+            Errors: [{ NextAction: ACTION_IDS.playGreeting, ErrorType: 'NoMatchingError' }],
             Conditions: [],
           },
         },

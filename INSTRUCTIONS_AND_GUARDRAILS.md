@@ -68,12 +68,12 @@ infra/
 
 ### 2.4 Environment Promotion
 
-| Environment | Purpose | Who deploys | Trigger |
-|---|---|---|---|
-| `dev` | Active development, may be unstable | Any engineer | Manual from feature branch |
-| `test` | Integration & regression validation | CI only | Push to `test` branch |
-| `staging` | Pre-prod mirror of prod | CI only | Tagged release candidate |
-| `prod` | Production | CI only, with approval gate | Tagged release after staging sign-off |
+| Environment | Purpose                             | Who deploys                 | Trigger                               |
+| ----------- | ----------------------------------- | --------------------------- | ------------------------------------- |
+| `dev`       | Active development, may be unstable | Any engineer                | Manual from feature branch            |
+| `test`      | Integration & regression validation | CI only                     | Push to `test` branch                 |
+| `staging`   | Pre-prod mirror of prod             | CI only                     | Tagged release candidate              |
+| `prod`      | Production                          | CI only, with approval gate | Tagged release after staging sign-off |
 
 A new environment is created by adding one config file and running one deploy command. Nothing else.
 
@@ -131,7 +131,7 @@ docs/
 
 ### 3.2 Document 1 — Product Requirements Document (PRD)
 
-**Purpose:** Define *what* is being built and *why*, in business and user terms. The PRD answers product questions, not engineering ones.
+**Purpose:** Define _what_ is being built and _why_, in business and user terms. The PRD answers product questions, not engineering ones.
 
 **Required sections:**
 
@@ -189,7 +189,7 @@ Questions that must be resolved before development starts. Each has an owner and
 
 - Written by or with the Product Owner.
 - Approved before user stories are written.
-- No technical implementation detail. If it describes *how*, it belongs in the TID.
+- No technical implementation detail. If it describes _how_, it belongs in the TID.
 - Open questions must be closed before approval. An "Open Questions" section with unresolved items blocks approval.
 
 ### 3.3 Document 2 — User Stories and Acceptance Criteria
@@ -248,7 +248,7 @@ Written in Given/When/Then (Gherkin) format.
 
 ### 3.4 Document 3 — Technical Implementation Document (TID)
 
-**Purpose:** Define *how* the phase will be built. The TID is the engineering counterpart to the PRD and is the primary reference during implementation.
+**Purpose:** Define _how_ the phase will be built. The TID is the engineering counterpart to the PRD and is the primary reference during implementation.
 
 **Required sections:**
 
@@ -493,12 +493,12 @@ Filled in at phase close. Did the phase meet its success metrics? What was learn
 
 ### 4.1 Test Pyramid
 
-| Layer | Scope | Speed | Where it runs |
-|---|---|---|---|
-| Unit | Single function, class, or construct | Milliseconds | Local + CI |
-| Integration | Multiple units, real or mocked external services | Seconds | Local + CI |
-| End-to-end (E2E) | Full vertical slice across the deployed system | Seconds to minutes | CI on `test` branch and beyond |
-| Regression | Cumulative E2E suite covering all completed phases | Minutes | CI on `test` branch and before every merge to `main` |
+| Layer            | Scope                                              | Speed              | Where it runs                                        |
+| ---------------- | -------------------------------------------------- | ------------------ | ---------------------------------------------------- |
+| Unit             | Single function, class, or construct               | Milliseconds       | Local + CI                                           |
+| Integration      | Multiple units, real or mocked external services   | Seconds            | Local + CI                                           |
+| End-to-end (E2E) | Full vertical slice across the deployed system     | Seconds to minutes | CI on `test` branch and beyond                       |
+| Regression       | Cumulative E2E suite covering all completed phases | Minutes            | CI on `test` branch and before every merge to `main` |
 
 ### 4.2 Hard Rules
 
@@ -531,14 +531,14 @@ tests/
 
 ### 4.4 Test Commands (Standard)
 
-| Command | Runs |
-|---|---|
-| `pnpm test` | Unit tests only |
-| `pnpm test:integration` | Integration tests |
-| `pnpm test:e2e` | Full E2E suite against `dev` env |
-| `pnpm test:regression` | Full regression suite against `test` env |
-| `pnpm test:phase <NN>` | Only the named phase's E2E tests |
-| `pnpm test:all` | Unit + integration + E2E |
+| Command                 | Runs                                     |
+| ----------------------- | ---------------------------------------- |
+| `pnpm test`             | Unit tests only                          |
+| `pnpm test:integration` | Integration tests                        |
+| `pnpm test:e2e`         | Full E2E suite against `dev` env         |
+| `pnpm test:regression`  | Full regression suite against `test` env |
+| `pnpm test:phase <NN>`  | Only the named phase's E2E tests         |
+| `pnpm test:all`         | Unit + integration + E2E                 |
 
 These names are mandatory. Scripts in every package use the same vocabulary.
 
@@ -684,6 +684,7 @@ Exceptions are not precedents. The next similar case is evaluated independently.
 Use this as the final gate before marking a phase complete:
 
 **Before development:**
+
 - [ ] PRD drafted, reviewed, and approved
 - [ ] User stories with Given/When/Then acceptance criteria drafted, reviewed, and approved
 - [ ] Technical Implementation Document drafted, reviewed, and approved
@@ -692,6 +693,7 @@ Use this as the final gate before marking a phase complete:
 - [ ] Phase summary document (`00-phase-summary.md`) created and status set to "Approved for Development"
 
 **During development:**
+
 - [ ] All code is in IaC; no console clicks
 - [ ] IaC is reusable (new env = one config file + one command)
 - [ ] Unit, integration, and E2E tests added for this phase
@@ -700,6 +702,7 @@ Use this as the final gate before marking a phase complete:
 - [ ] TID kept in sync with implementation
 
 **Before merge to `main`:**
+
 - [ ] Pushed to `test` branch; full regression passes on `test`
 - [ ] PR opened from `test` to `main`; CI green; reviewer approved
 - [ ] Observability (logs, metrics, alarms, runbook) added

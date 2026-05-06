@@ -64,7 +64,10 @@ export class Networking extends Construct {
       { id: 'Ecr', service: ec2.InterfaceVpcEndpointAwsService.ECR },
       { id: 'EcrDocker', service: ec2.InterfaceVpcEndpointAwsService.ECR_DOCKER },
       { id: 'CloudWatchLogs', service: ec2.InterfaceVpcEndpointAwsService.CLOUDWATCH_LOGS },
-      { id: 'CloudWatchMonitoring', service: ec2.InterfaceVpcEndpointAwsService.CLOUDWATCH_MONITORING },
+      {
+        id: 'CloudWatchMonitoring',
+        service: ec2.InterfaceVpcEndpointAwsService.CLOUDWATCH_MONITORING,
+      },
       { id: 'Sts', service: ec2.InterfaceVpcEndpointAwsService.STS },
       { id: 'Lambda', service: ec2.InterfaceVpcEndpointAwsService.LAMBDA },
       { id: 'EventBridge', service: ec2.InterfaceVpcEndpointAwsService.EVENTBRIDGE },

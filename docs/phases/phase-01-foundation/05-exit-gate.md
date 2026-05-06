@@ -3,6 +3,7 @@
 ## Checklist
 
 ### Before Development
+
 - [x] PRD drafted, reviewed, and approved
 - [x] User stories with Given/When/Then acceptance criteria drafted, reviewed, and approved
 - [x] Technical Implementation Document drafted, reviewed, and approved
@@ -11,6 +12,7 @@
 - [x] Phase summary document created and status set to "In Development"
 
 ### During Development
+
 - [x] All code is in IaC; no console clicks
 - [x] IaC is reusable (new env = one config file + one command)
 - [x] Unit tests added for this phase
@@ -19,6 +21,7 @@
 - [x] TID kept in sync with implementation
 
 ### Before Merge to Main
+
 - [x] Pushed to `master` branch; all tests pass
 - [x] Phase documentation set updated
 - [x] Regression suite imports the new phase's tests
@@ -26,6 +29,7 @@
 - [x] Phase status updated to "Complete" in `/docs/index.md`
 
 ### Deployment Verification
+
 - [x] CDK bootstrap completed (us-east-1, account 263611243147)
 - [x] `cdk diff` reviewed before deploy
 - [x] `cdk deploy` succeeded — stack: `AirlineVoiceAgent-Networking-dev`
@@ -34,7 +38,8 @@
 - [x] GitHub repo: https://github.com/zenvyus/AWS-Voice-Agent
 
 ## Sign-Off
-| Role | Name | Date | Status |
-|------|------|------|--------|
-| Engineering Lead | — | 2026-05-05 | Approved |
-| Reviewer | — | 2026-05-05 | Approved |
+
+| Role             | Name | Date       | Status   |
+| ---------------- | ---- | ---------- | -------- |
+| Engineering Lead | —    | 2026-05-05 | Approved |
+| Reviewer         | —    | 2026-05-05 | Approved |

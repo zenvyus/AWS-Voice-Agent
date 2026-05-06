@@ -52,15 +52,15 @@ cd infra && cdk deploy -c env=dev
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `pnpm test` | Run unit tests |
-| `pnpm test:integration` | Run integration tests |
-| `pnpm test:e2e` | Run end-to-end tests |
-| `pnpm test:regression` | Run full regression suite |
-| `pnpm lint` | Lint all packages |
-| `pnpm format` | Format all files |
-| `pnpm format:check` | Check formatting |
+| Command                 | Description               |
+| ----------------------- | ------------------------- |
+| `pnpm test`             | Run unit tests            |
+| `pnpm test:integration` | Run integration tests     |
+| `pnpm test:e2e`         | Run end-to-end tests      |
+| `pnpm test:regression`  | Run full regression suite |
+| `pnpm lint`             | Lint all packages         |
+| `pnpm format`           | Format all files          |
+| `pnpm format:check`     | Check formatting          |
 
 ## Documentation
 

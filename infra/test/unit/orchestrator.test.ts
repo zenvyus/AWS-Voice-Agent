@@ -79,9 +79,7 @@ describe('OrchestratorStack', () => {
       ContainerDefinitions: Match.arrayWith([
         Match.objectLike({
           Name: 'orchestrator',
-          PortMappings: Match.arrayWith([
-            Match.objectLike({ ContainerPort: 8080 }),
-          ]),
+          PortMappings: Match.arrayWith([Match.objectLike({ ContainerPort: 8080 })]),
         }),
       ]),
     });
@@ -95,7 +93,10 @@ describe('OrchestratorStack', () => {
           Environment: Match.arrayWith([
             Match.objectLike({ Name: 'ENVIRONMENT', Value: 'dev' }),
             Match.objectLike({ Name: 'SESSIONS_TABLE', Value: 'voice-agent-sessions-dev' }),
-            Match.objectLike({ Name: 'UTTERANCE_QUEUE_TABLE', Value: 'voice-agent-utterance-queue-dev' }),
+            Match.objectLike({
+              Name: 'UTTERANCE_QUEUE_TABLE',
+              Value: 'voice-agent-utterance-queue-dev',
+            }),
           ]),
         }),
       ]),

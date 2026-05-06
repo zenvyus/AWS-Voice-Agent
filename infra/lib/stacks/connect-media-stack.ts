@@ -40,16 +40,18 @@ export class ConnectMediaStack extends cdk.Stack {
     const dataKey = kms.Key.fromKeyArn(this, 'DataKey', props.dataKeyArn);
 
     const sessionsTable = dynamodb.Table.fromTableName(
-      this, 'SessionsTable', props.sessionsTableName,
+      this,
+      'SessionsTable',
+      props.sessionsTableName,
     );
 
     const transcriptsBucket = s3.Bucket.fromBucketArn(
-      this, 'TranscriptsBucket', props.transcriptsBucketArn,
+      this,
+      'TranscriptsBucket',
+      props.transcriptsBucketArn,
     );
 
-    const assetsBucket = s3.Bucket.fromBucketArn(
-      this, 'AssetsBucket', props.assetsBucketArn,
-    );
+    const assetsBucket = s3.Bucket.fromBucketArn(this, 'AssetsBucket', props.assetsBucketArn);
 
     // Connect Instance
     this.connectInstance = new ConnectInstance(this, 'Connect', {

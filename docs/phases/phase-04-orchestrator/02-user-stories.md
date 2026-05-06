@@ -9,11 +9,13 @@
 ### Acceptance Criteria
 
 **AC1: Repository created**
+
 - **Given** the orchestrator stack is synthesised
 - **When** I inspect the template
 - **Then** an ECR repository exists with image scanning enabled and lifecycle policy
 
 **AC2: Encryption**
+
 - **Given** the ECR repository
 - **When** deployed
 - **Then** images are encrypted with the data KMS key
@@ -29,21 +31,25 @@
 ### Acceptance Criteria
 
 **AC1: ECS cluster created**
+
 - **Given** the orchestrator stack
 - **When** synthesised
 - **Then** an ECS cluster exists with container insights enabled
 
 **AC2: Task definition**
+
 - **Given** the task definition
 - **When** synthesised
 - **Then** it uses Fargate compatibility, Python 3.12 container, 1 vCPU, 2 GB memory
 
 **AC3: Service in private subnets**
+
 - **Given** the Fargate service
 - **When** deployed
 - **Then** tasks run in private subnets with no public IP assignment
 
 **AC4: Health check**
+
 - **Given** the service
 - **When** a task is running
 - **Then** the NLB target group health-check on `/health` returns 200
@@ -59,11 +65,13 @@
 ### Acceptance Criteria
 
 **AC1: NLB created**
+
 - **Given** the orchestrator stack
 - **When** synthesised
 - **Then** an internal NLB exists in private subnets
 
 **AC2: Target group**
+
 - **Given** the NLB
 - **When** deployed
 - **Then** it has a target group pointing to the Fargate service on port 8080
@@ -79,6 +87,7 @@
 ### Acceptance Criteria
 
 **AC1: Scalable target**
+
 - **Given** the orchestrator stack
 - **When** synthesised
 - **Then** an Application Auto Scaling scalable target exists with min=0, max=10
@@ -94,6 +103,7 @@
 ### Acceptance Criteria
 
 **AC1: Task role policy**
+
 - **Given** the task definition
 - **When** synthesised
 - **Then** the task role has policies for kinesisvideo, transcribe, polly, dynamodb, s3, bedrock, kms
