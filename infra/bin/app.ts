@@ -11,6 +11,7 @@ import { NoiseMonitorStack } from '../lib/stacks/noise-monitor-stack';
 import { GitHubOidcStack } from '../lib/stacks/github-oidc-stack';
 import { ObservabilityStack } from '../lib/stacks/observability-stack';
 import { DisasterRecoveryStack } from '../lib/stacks/disaster-recovery-stack';
+import { DrDestinationStack } from '../lib/stacks/dr-destination-stack';
 import { getConfig } from '../lib/config';
 
 const app = new cdk.App();
@@ -37,9 +38,9 @@ const replicationRoleArn = `arn:aws:iam::${config.account}:role/s3-replication-r
 const destinationBucketArn = `arn:aws:s3:::airline-voice-transcripts-dr-${config.account}-${drRegion}`;
 const destinationKmsKeyArn = `arn:aws:kms:${drRegion}:${config.account}:alias/airline-voice-agent-dr-key`;
 
-// Replication is enabled only when DR destination bucket exists (staging/prod).
-// Set CRR_ENABLED=true to activate replication after DR bucket is provisioned.
-const crrEnabled = process.env.CRR_ENABLED === 'true';
+// CRR is enabled by default now that DrDestinationStack provisions the DR bucket.
+// Set CRR_ENABLED=false to explicitly disable replication.
+const crrEnabled = process.env.CRR_ENABLED !== 'false';
 
 const dataLayerStack = new DataLayerStack(
   app,
@@ -230,5 +231,22 @@ const githubOidcStack = new GitHubOidcStack(app, 'AirlineVoiceAgent-GitHubOidc',
   },
   description: 'Airline Voice Agent - GitHub OIDC Provider & Deploy Role',
 });
+
+// DR Destination: S3 bucket + KMS key in us-west-2 for cross-region replication
+const drDestinationStack = new DrDestinationStack(
+  app,
+  `AirlineVoiceAgent-DrDestination-${config.environmentName}`,
+  {
+    config,
+    sourceAccountId: config.account,
+    sourceReplicationRoleName: `s3-replication-role-${config.environmentName}`,
+    env: {
+      account: config.account,
+      region: drRegion,
+    },
+    description: `Airline Voice Agent - DR Destination Stack (${config.environmentName})`,
+    crossRegionReferences: true,
+  },
+);
 
 app.synth();

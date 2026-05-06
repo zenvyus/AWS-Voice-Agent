@@ -36,3 +36,4 @@ import './phase-09-cicd-dr/dr-validation.test';
 // Phase 10: Integration Testing & Hardening
 import './phase-10-integration/latency.test';
 import './phase-10-integration/failure-injection.test';
+import './phase-10-integration/load.test';
