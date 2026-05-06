@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved for Development
+Complete
 
 ## Documents
 
@@ -16,15 +16,18 @@ Approved for Development
 
 - Documentation start: 2026-05-06
 - Documentation approved: 2026-05-06
-- Development start: TBD
-- Test branch: TBD
-- Merged to main: TBD
-- Production deploy: TBD
+- Development start: 2026-05-06
+- Test branch: 2026-05-06
+- Merged to main: 2026-05-06
+- Production deploy: Pending DR bucket provisioning
 
 ## Key Decisions
 
-- TBD
+- S3 CRR activation gated behind CRR_ENABLED env var (requires DR destination bucket)
+- ECS circuit breaker with rollback enabled natively
+- AWS Backup for coordinated cross-region backup strategy
+- Pipeline notifications via direct SNS publish from GitHub Actions (OIDC)
 
 ## Outcome
 
-Pending — to be filled at phase close.
+Deployed: DisasterRecoveryStack (backup vault, plan, selection, S3 replication IAM role), ECS circuit breaker on orchestrator, pipeline notifications in CI/CD workflow. DR runbook created with RTO < 4h / RPO < 1h targets.
