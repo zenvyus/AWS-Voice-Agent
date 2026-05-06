@@ -3,7 +3,7 @@
 | Phase | Title | Status | Folder |
 |-------|-------|--------|--------|
 | 01 | Foundation & Repo Scaffold | Complete | [phase-01-foundation](./phases/phase-01-foundation/) |
-| 02 | Data Layer | Planned | — |
+| 02 | Data Layer | Complete | [phase-02-data-layer](./phases/phase-02-data-layer/) |
 | 03 | Amazon Connect & Media Transport | Planned | — |
 | 04 | Orchestrator Service (Fargate) | Planned | — |
 | 05 | Intelligence Layer (Bedrock Agent & Tools) | Planned | — |

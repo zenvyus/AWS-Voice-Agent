@@ -1,0 +1,19 @@
+﻿At line:1 char:262
++ ... ForEach-Object { System.IO.Compression.DeflateStream = .Open(); Syste ...
++                                                                  ~
+An expression was expected after '('.
+At line:1 char:398
++ ... pression.DeflateStream);  = System.IO.StreamReader.ReadToEnd(); Syste ...
++                                                                  ~
+An expression was expected after '('.
+At line:1 char:430
++ ... em.IO.StreamReader.ReadToEnd(); System.IO.StreamReader.Close(); Syste ...
++                                                                  ~
+An expression was expected after '('.
+At line:1 char:475
++ ... eamReader.Close(); System.IO.Compression.DeflateStream.Close();  -rep ...
++                                                                  ~
+An expression was expected after '('.
+    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : ExpectedExpression
+ 
