@@ -1,0 +1,6 @@
+packages:
+  - "infra"
+  - "services/*"
+  - "lambdas/*"
+  - "lambdas/tools/*"
+  - "tests"

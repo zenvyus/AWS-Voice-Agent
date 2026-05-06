@@ -1,0 +1,7 @@
+[allowlist]
+  description = "Global allowlist"
+  paths = [
+    '''node_modules''',
+    '''\.gitleaksignore''',
+    '''pnpm-lock\.yaml''',
+  ]

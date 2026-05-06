@@ -1,0 +1,45 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["**/.env.*local"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", "cdk.out/**"]
+    },
+    "test": {
+      "dependsOn": ["build"],
+      "outputs": [],
+      "inputs": ["src/**", "test/**"]
+    },
+    "test:integration": {
+      "dependsOn": ["build"],
+      "outputs": [],
+      "inputs": ["src/**", "test/**"]
+    },
+    "test:e2e": {
+      "dependsOn": ["build"],
+      "outputs": [],
+      "inputs": ["src/**", "test/**"]
+    },
+    "test:regression": {
+      "dependsOn": ["build"],
+      "outputs": [],
+      "inputs": ["src/**", "test/**"]
+    },
+    "test:phase": {
+      "dependsOn": ["build"],
+      "outputs": [],
+      "inputs": ["src/**", "test/**"]
+    },
+    "lint": {
+      "outputs": []
+    },
+    "format": {
+      "outputs": []
+    },
+    "synth": {
+      "dependsOn": ["build"],
+      "outputs": ["cdk.out/**"]
+    }
+  }
+}

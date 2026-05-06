@@ -1,0 +1,27 @@
+{
+  "name": "aws-airline-voice-agent",
+  "version": "0.0.1",
+  "private": true,
+  "description": "AWS-native AI voice agent for airline customer service",
+  "scripts": {
+    "test": "turbo run test",
+    "test:integration": "turbo run test:integration",
+    "test:e2e": "turbo run test:e2e",
+    "test:regression": "turbo run test:regression",
+    "test:phase": "turbo run test:phase --",
+    "test:all": "turbo run test test:integration test:e2e",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,js,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,json,md}\"",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.1.0",
+    "prettier": "^3.3.0",
+    "turbo": "^2.1.0"
+  },
+  "packageManager": "pnpm@9.10.0",
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
