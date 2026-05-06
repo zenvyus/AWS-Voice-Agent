@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved for Development
+Complete
 
 ## Documents
 
@@ -10,21 +10,32 @@ Approved for Development
 - [User Stories](./02-user-stories.md) — Status: Approved
 - [TID](./03-tid.md) — Status: Approved
 - [Test Plan](./04-test-plan.md) — Status: Approved
-- [Exit Gate](./05-exit-gate.md) — Status: Pending
+- [Exit Gate](./05-exit-gate.md) — Status: Complete
 
 ## Timeline
 
 - Documentation start: 2026-05-06
 - Documentation approved: 2026-05-06
-- Development start: TBD
-- Test branch: TBD
-- Merged to main: TBD
+- Development start: 2026-05-06
+- Test branch: 2026-05-06
+- Merged to main: 2026-05-06
 - Production deploy: TBD
 
 ## Key Decisions
 
-- TBD
+- Native CloudWatch over Grafana (stay AWS-native, no external dependencies)
+- Composite alarm with OR logic over EventBridge rule
+- Python utility module over Lambda layer (simpler deployment)
+- JSON structured logs over CloudWatch Embedded Metric Format
 
 ## Outcome
 
-Pending — to be filled at phase close.
+Deployed ObservabilityStack with:
+
+- Unified CloudWatch dashboard (`airline-voice-agent-dev`)
+- 3 per-Lambda error rate alarms
+- Composite system health alarm
+- SNS notification topic
+- Structured JSON logging utility
+- Runbook for all new alarms
+- 17 unit tests + 16 E2E tests passing
