@@ -32,3 +32,7 @@ import './phase-09-cicd-dr/backup.test';
 import './phase-09-cicd-dr/rollback.test';
 import './phase-09-cicd-dr/replication.test';
 import './phase-09-cicd-dr/dr-validation.test';
+
+// Phase 10: Integration Testing & Hardening
+import './phase-10-integration/latency.test';
+import './phase-10-integration/failure-injection.test';
