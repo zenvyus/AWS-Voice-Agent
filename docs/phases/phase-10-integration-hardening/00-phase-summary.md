@@ -2,7 +2,7 @@
 
 ## Status
 
-Approved for Development
+Complete
 
 ## Documents
 
@@ -16,15 +16,18 @@ Approved for Development
 
 - Documentation start: 2026-05-06
 - Documentation approved: 2026-05-06
-- Development start: TBD
-- Test branch: TBD
-- Merged to main: TBD
-- Production deploy: TBD
+- Development start: 2026-05-06
+- Test branch: 2026-05-06
+- Merged to main: 2026-05-06
+- Production deploy: N/A (test-only phase)
 
 ## Key Decisions
 
-- TBD
+- Zod-style inline schema validators over Pact for contract testing (simpler, same-repo)
+- k6 for load testing (JS-native, good CI integration)
+- DynamoDB latency threshold at 200ms (accounts for cross-network test runner)
+- Failure injection validates alarm existence rather than waiting for alarm state transition
 
 ## Outcome
 
-Pending — to be filled at phase close.
+Delivered: 12 contract tests, 3 cross-stack integration tests, 2 latency validation tests, 3 failure injection tests, k6 load test harness. Total new tests: 20. All passing.
