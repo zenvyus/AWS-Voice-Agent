@@ -1,0 +1,204 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Airline Voice Agent Tools",
+    "description": "Action group tools for the airline voice agent Bedrock Agent",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/searchFlights": {
+      "get": {
+        "operationId": "searchFlights",
+        "summary": "Search for available flights between two airports on a given date",
+        "description": "Returns a list of available flights with prices and seat availability.",
+        "parameters": [
+          {
+            "name": "origin",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "IATA code of the departure airport (e.g., JFK, LAX, SYD)"
+          },
+          {
+            "name": "destination",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "IATA code of the arrival airport (e.g., JFK, LAX, SYD)"
+          },
+          {
+            "name": "date",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "format": "date" },
+            "description": "Travel date in YYYY-MM-DD format"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of available flights",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "flights": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "flightNumber": { "type": "string" },
+                          "origin": { "type": "string" },
+                          "destination": { "type": "string" },
+                          "date": { "type": "string" },
+                          "departureTime": { "type": "string" },
+                          "arrivalTime": { "type": "string" },
+                          "price": { "type": "number" },
+                          "seatsAvailable": { "type": "integer" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/createBooking": {
+      "post": {
+        "operationId": "createBooking",
+        "summary": "Create a new flight booking",
+        "description": "Books a seat on a flight for a passenger and returns a confirmation with an order ID.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["flightNumber", "passengerName", "date"],
+                "properties": {
+                  "flightNumber": {
+                    "type": "string",
+                    "description": "Flight number to book (e.g., VA101)"
+                  },
+                  "passengerName": {
+                    "type": "string",
+                    "description": "Full name of the passenger"
+                  },
+                  "date": {
+                    "type": "string",
+                    "format": "date",
+                    "description": "Travel date in YYYY-MM-DD format"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Booking confirmation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "orderId": { "type": "string" },
+                    "flightNumber": { "type": "string" },
+                    "passengerName": { "type": "string" },
+                    "status": { "type": "string" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getBooking": {
+      "get": {
+        "operationId": "getBooking",
+        "summary": "Look up an existing booking by order ID",
+        "description": "Retrieves booking details including flight, passenger, and seat information.",
+        "parameters": [
+          {
+            "name": "orderId",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string" },
+            "description": "The 6-character alphanumeric booking reference"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Booking details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "orderId": { "type": "string" },
+                    "flightNumber": { "type": "string" },
+                    "origin": { "type": "string" },
+                    "destination": { "type": "string" },
+                    "date": { "type": "string" },
+                    "departureTime": { "type": "string" },
+                    "passengerName": { "type": "string" },
+                    "seat": { "type": "string" },
+                    "status": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/selectSeat": {
+      "post": {
+        "operationId": "selectSeat",
+        "summary": "Select or change a seat for an existing booking",
+        "description": "Assigns the specified seat to the booking.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["orderId", "seatNumber"],
+                "properties": {
+                  "orderId": {
+                    "type": "string",
+                    "description": "The 6-character booking reference"
+                  },
+                  "seatNumber": { "type": "string", "description": "Seat identifier (e.g., 14F)" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Seat assignment confirmation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "orderId": { "type": "string" },
+                    "seat": { "type": "string" },
+                    "status": { "type": "string" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

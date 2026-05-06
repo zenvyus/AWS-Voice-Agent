@@ -12,4 +12,7 @@ export const STACKS = {
   dataLayer: `AirlineVoiceAgent-DataLayer-${ENV_NAME}`,
   connectMedia: `AirlineVoiceAgent-ConnectMedia-${ENV_NAME}`,
   orchestrator: `AirlineVoiceAgent-Orchestrator-${ENV_NAME}`,
+  vectorStore: `AirlineVoiceAgent-VectorStore-${ENV_NAME}`,
+  intelligence: `AirlineVoiceAgent-Intelligence-${ENV_NAME}`,
+  noiseMonitor: `AirlineVoiceAgent-NoiseMonitor-${ENV_NAME}`,
 } as const;

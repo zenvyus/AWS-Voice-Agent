@@ -10,6 +10,7 @@ cdk.out/
 *.js.map
 
 # CDK
+cdk.out*/
 cdk.context.json
 
 # IDE

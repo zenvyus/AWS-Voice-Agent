@@ -1,4 +1,4 @@
-name: CI
+name: CI/CD Pipeline
 
 on:
   push:
@@ -10,7 +10,19 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  AWS_REGION: us-east-1
+  NODE_VERSION: '20'
+  PNPM_VERSION: '9'
+
 jobs:
+  # ─────────────────────────────────────────────────────────────────────
+  # Gate 0: Validation (runs on ALL branches)
+  # ─────────────────────────────────────────────────────────────────────
   lint:
     name: Lint & Format
     runs-on: ubuntu-latest
@@ -18,10 +30,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm format:check
@@ -33,10 +45,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: cd infra && npx tsc --noEmit
@@ -48,10 +60,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm test
@@ -64,19 +76,198 @@ jobs:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: cd infra && npx cdk synth -c env=dev
+      - run: cd infra && npx cdk synth -c env=dev --quiet
         env:
-          CDK_DEFAULT_ACCOUNT: '000000000000'
-          CDK_DEFAULT_REGION: us-east-1
+          CDK_DEFAULT_ACCOUNT: ${{ secrets.AWS_ACCOUNT_ID }}
+          CDK_DEFAULT_REGION: ${{ env.AWS_REGION }}
 
+  # ─────────────────────────────────────────────────────────────────────
+  # Gate 1: Deploy to TEST (on push to test branch only)
+  # ─────────────────────────────────────────────────────────────────────
+  deploy-test:
+    name: Deploy to Test
+    runs-on: ubuntu-latest
+    needs: [lint, cdk-synth]
+    if: github.ref == 'refs/heads/test' && github.event_name == 'push'
+    environment: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      - run: pnpm install --frozen-lockfile
+      - name: CDK Diff (test)
+        run: cd infra && npx cdk diff -c env=test --require-approval never 2>&1 || true
+      - name: CDK Deploy (test)
+        run: cd infra && npx cdk deploy --all -c env=test --require-approval never
+
+  integration-test:
+    name: Integration Tests (Test Env)
+    runs-on: ubuntu-latest
+    needs: [deploy-test]
+    environment: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      - run: pnpm install --frozen-lockfile
+      - name: Run Integration Tests
+        run: cd infra && npx jest --config jest.config.integration.ts
+        env:
+          TARGET_ENV: test
+
+  e2e-test:
+    name: E2E Tests (Test Env)
+    runs-on: ubuntu-latest
+    needs: [integration-test]
+    environment: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      - run: pnpm install --frozen-lockfile
+      - name: Run E2E Tests
+        run: cd infra && npx jest --config jest.config.e2e.ts
+        env:
+          TARGET_ENV: test
+
+  regression-test:
+    name: Regression Suite (Test Env)
+    runs-on: ubuntu-latest
+    needs: [e2e-test]
+    environment: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      - run: pnpm install --frozen-lockfile
+      - name: Run Regression Suite
+        run: cd infra && npx jest --config jest.config.regression.ts
+        env:
+          TARGET_ENV: test
+
+  # ─────────────────────────────────────────────────────────────────────
+  # Gate 2: Deploy to STAGING (on push to main only)
+  # ─────────────────────────────────────────────────────────────────────
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [lint, cdk-synth]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      - run: pnpm install --frozen-lockfile
+      - name: CDK Deploy (staging)
+        run: cd infra && npx cdk deploy --all -c env=staging --require-approval never
+
+  staging-smoke:
+    name: Smoke Tests (Staging)
+    runs-on: ubuntu-latest
+    needs: [deploy-staging]
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      - run: pnpm install --frozen-lockfile
+      - name: Run Regression Suite (staging)
+        run: cd infra && npx jest --config jest.config.regression.ts
+        env:
+          TARGET_ENV: staging
+
+  # ─────────────────────────────────────────────────────────────────────
+  # Gate 3: Deploy to PROD (manual approval required)
+  # ─────────────────────────────────────────────────────────────────────
+  deploy-prod:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [staging-smoke]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+      - run: pnpm install --frozen-lockfile
+      - name: CDK Deploy (prod)
+        run: cd infra && npx cdk deploy --all -c env=prod --require-approval never
+
+  # ─────────────────────────────────────────────────────────────────────
+  # PR validation: CDK Diff
+  # ─────────────────────────────────────────────────────────────────────
   cdk-diff:
-    name: CDK Diff
+    name: CDK Diff (PR)
     runs-on: ubuntu-latest
     needs: [cdk-synth]
     if: github.event_name == 'pull_request'
@@ -84,13 +275,14 @@ jobs:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: ${{ env.PNPM_VERSION }}
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
       - run: pnpm install --frozen-lockfile
       - run: cd infra && npx cdk diff -c env=dev 2>&1 || true
-        env:
-          CDK_DEFAULT_ACCOUNT: '000000000000'
-          CDK_DEFAULT_REGION: us-east-1

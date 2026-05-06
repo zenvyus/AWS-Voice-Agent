@@ -550,6 +550,24 @@ These names are mandatory. Scripts in every package use the same vocabulary.
 
 Coverage is enforced in CI. Drops below threshold fail the build.
 
+### 4.6 Acceptance Criteria Validation (Mandatory Per Phase)
+
+After development of every phase, **every acceptance criterion** documented in that phase's `02-user-stories.md` must be exercised by an automated test, and **all of those tests must pass** before the phase can advance through any promotion gate.
+
+**Hard rules:**
+
+1. **Full coverage.** Every Given/When/Then acceptance criterion in the phase has at least one automated test (unit, integration, or E2E — chosen to match the criterion's scope) that asserts the `Then` outcome under the specified `Given`/`When` conditions. Criteria with no test fail the phase.
+2. **Traceability is enforced, not aspirational.** Each test that validates an acceptance criterion is tagged or named with the criterion's ID (e.g., `Story 3.2 / AC1`). The phase's `04-test-plan.md` contains a complete mapping table (Story ID → AC ID → test file → test name). Reviewers reject phases where the table has gaps.
+3. **All acceptance-criteria tests must pass — no exceptions.** A failing, skipped, or quarantined acceptance-criteria test blocks all promotion. There is no "we'll fix it after merge."
+4. **Local first.** The full set of phase acceptance-criteria tests must pass on the developer's local machine **before** pushing to the `test` branch.
+5. **Test branch second.** The same tests must pass in CI on the `test` branch — both standalone (`pnpm test:phase <NN>`) and as part of the full regression run — **before** the PR from `test` → `main` is eligible for merge.
+6. **Main and deployment third.** The merge to `main` and any subsequent deployment to AWS (staging, prod) is blocked until the test-branch run is fully green.
+7. **AC tests join the regression suite permanently.** Once a phase's acceptance-criteria tests pass, they are added to `regression.suite.ts` and run on every subsequent phase's promotion. A regression that breaks a prior phase's acceptance criterion blocks the new phase.
+
+**Required CI status check:** `acceptance-criteria` — a dedicated check that runs the phase's AC-tagged tests and reports pass/fail per criterion. This check is required on both `test` and `main` branch protections.
+
+**Reviewer responsibility:** During code review, the reviewer opens `04-test-plan.md`, picks acceptance criteria at random, and confirms the corresponding test exists, runs, and asserts what the criterion actually says. Approvals issued without this check are themselves a process violation.
+
 ---
 
 ## 6. Branching and Promotion Workflow
@@ -571,6 +589,7 @@ feature/*     ← short-lived, one per phase or sub-task
 - All unit tests pass locally.
 - All integration tests pass locally.
 - All E2E tests for the affected phase pass locally against `dev`.
+- **Every acceptance criterion in the phase's `02-user-stories.md` has a passing automated test locally. No AC may be unverified, skipped, or pending.**
 - `cdk diff` reviewed.
 - Linter, formatter, type-checker clean.
 - Pre-commit hooks pass (secret scan, format).
@@ -578,6 +597,7 @@ feature/*     ← short-lived, one per phase or sub-task
 **Gate 2 — `test` branch → `main` (PR from `test` → `main`):**
 
 - CI runs full regression suite against the `test` environment. Must pass.
+- **CI runs the phase's acceptance-criteria test set on the `test` branch. Every AC must pass. Any failure blocks merge to `main` and any deployment to AWS.**
 - CI runs `cdk synth` and `cdk diff` against `staging` config. Must be reviewed.
 - At least one reviewer approval.
 - No open `Changes requested` reviews.
@@ -595,8 +615,8 @@ feature/*     ← short-lived, one per phase or sub-task
 The following must be enforced via repository settings:
 
 - `main` and `test` require pull requests; no direct pushes.
-- `main` requires status checks: `unit`, `integration`, `e2e`, `regression`, `cdk-diff`, `lint`.
-- `test` requires status checks: `unit`, `integration`, `e2e`, `lint`.
+- `main` requires status checks: `unit`, `integration`, `e2e`, `regression`, `acceptance-criteria`, `cdk-diff`, `lint`.
+- `test` requires status checks: `unit`, `integration`, `e2e`, `acceptance-criteria`, `lint`.
 - Stale reviews dismissed on new commits.
 - Force-push disabled on protected branches.
 - Linear history required on `main`.
@@ -698,12 +718,14 @@ Use this as the final gate before marking a phase complete:
 - [ ] IaC is reusable (new env = one config file + one command)
 - [ ] Unit, integration, and E2E tests added for this phase
 - [ ] Each acceptance criterion is mapped to at least one automated test
+- [ ] **Every acceptance criterion in `02-user-stories.md` has a passing automated test locally**
 - [ ] All tests pass locally
 - [ ] TID kept in sync with implementation
 
 **Before merge to `main`:**
 
 - [ ] Pushed to `test` branch; full regression passes on `test`
+- [ ] **Every acceptance criterion test passes on the `test` branch in CI** — no failures, skips, or quarantines
 - [ ] PR opened from `test` to `main`; CI green; reviewer approved
 - [ ] Observability (logs, metrics, alarms, runbook) added
 - [ ] Phase documentation set updated (PRD, stories, TID still reflect what shipped)
@@ -711,4 +733,4 @@ Use this as the final gate before marking a phase complete:
 - [ ] Exit gate document (`05-exit-gate.md`) filled in and signed off
 - [ ] Phase status updated to "Complete" in `/docs/index.md`
 
-If any box is unchecked, the phase is not done.
+If any box is unchecked, the phase is not done. **Deployment to AWS is not permitted while any acceptance criterion remains unvalidated.**

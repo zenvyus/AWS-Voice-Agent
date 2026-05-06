@@ -15,3 +15,9 @@ import './phase-03-connect-media/connect-media.test';
 
 // Phase 4: Orchestrator
 import './phase-04-orchestrator/orchestrator.test';
+
+// Phase 5: Intelligence
+import './phase-05-intelligence/intelligence.test';
+
+// Phase 6: Noise Monitor
+import './phase-06-noise-monitor/noise-monitor.test';
