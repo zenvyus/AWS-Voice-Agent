@@ -8,6 +8,7 @@ import { OrchestratorStack } from '../lib/stacks/orchestrator-stack';
 import { IntelligenceStack } from '../lib/stacks/intelligence-stack';
 import { VectorStoreStack } from '../lib/stacks/vector-store-stack';
 import { NoiseMonitorStack } from '../lib/stacks/noise-monitor-stack';
+import { GitHubOidcStack } from '../lib/stacks/github-oidc-stack';
 import { getConfig } from '../lib/config';
 
 const app = new cdk.App();
@@ -143,5 +144,16 @@ const noiseMonitorStack = new NoiseMonitorStack(
 );
 
 noiseMonitorStack.addDependency(dataLayerStack);
+
+// CI/CD: GitHub OIDC provider and deploy role (deployed once, not per-environment)
+const githubOidcStack = new GitHubOidcStack(app, 'AirlineVoiceAgent-GitHubOidc', {
+  githubOrg: 'zenvyus',
+  githubRepo: 'AWS-Voice-Agent',
+  env: {
+    account: config.account,
+    region: config.region,
+  },
+  description: 'Airline Voice Agent - GitHub OIDC Provider & Deploy Role',
+});
 
 app.synth();
