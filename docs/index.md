@@ -2,7 +2,7 @@
 
 | Phase | Title | Status | Folder |
 |-------|-------|--------|--------|
-| 01 | Foundation & Repo Scaffold | In Development | [phase-01-foundation](./phases/phase-01-foundation/) |
+| 01 | Foundation & Repo Scaffold | Complete | [phase-01-foundation](./phases/phase-01-foundation/) |
 | 02 | Data Layer | Planned | — |
 | 03 | Amazon Connect & Media Transport | Planned | — |
 | 04 | Orchestrator Service (Fargate) | Planned | — |
