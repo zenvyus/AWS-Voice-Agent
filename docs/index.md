@@ -10,5 +10,5 @@
 | 06    | Noise Monitor & Speech Quality             | Complete                 | [phase-06-noise-monitor](./phases/phase-06-noise-monitor/) |
 | 07    | Observability & Dashboards                 | Complete                 | [phase-07-observability](./phases/phase-07-observability/) |
 | 08    | Security Hardening & Compliance            | Approved for Development | [phase-08-security](./phases/phase-08-security/)           |
-| 09    | CI/CD Pipeline & DR                        | Planned                  | —                                                          |
+| 09    | CI/CD Pipeline & DR                        | Approved for Development | [phase-09-cicd-dr](./phases/phase-09-cicd-dr/)             |
 | 10    | Integration Testing & Hardening            | Planned                  | —                                                          |
