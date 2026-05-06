@@ -21,3 +21,8 @@ import './phase-05-intelligence/intelligence.test';
 
 // Phase 6: Noise Monitor
 import './phase-06-noise-monitor/noise-monitor.test';
+
+// Phase 7: Observability
+import './phase-07-observability/dashboard.test';
+import './phase-07-observability/alarms.test';
+import './phase-07-observability/logging.test';

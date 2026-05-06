@@ -9,6 +9,7 @@ import { IntelligenceStack } from '../lib/stacks/intelligence-stack';
 import { VectorStoreStack } from '../lib/stacks/vector-store-stack';
 import { NoiseMonitorStack } from '../lib/stacks/noise-monitor-stack';
 import { GitHubOidcStack } from '../lib/stacks/github-oidc-stack';
+import { ObservabilityStack } from '../lib/stacks/observability-stack';
 import { getConfig } from '../lib/config';
 
 const app = new cdk.App();
@@ -144,6 +145,39 @@ const noiseMonitorStack = new NoiseMonitorStack(
 );
 
 noiseMonitorStack.addDependency(dataLayerStack);
+
+// Observability: Dashboard, Alarms, SNS Topic
+const observabilityStack = new ObservabilityStack(
+  app,
+  `AirlineVoiceAgent-Observability-${config.environmentName}`,
+  {
+    config,
+    lambdaFunctionNames: [
+      `speech-quality-gate-${config.environmentName}`,
+      `agent-tools-${config.environmentName}`,
+      `session-bootstrap-${config.environmentName}`,
+    ],
+    stateMachineName: `noise-monitor-${config.environmentName}`,
+    ecsClusterName: `airline-voice-agent-${config.environmentName}`,
+    ecsServiceName: `orchestrator-${config.environmentName}`,
+    dynamoTableNames: [
+      dataLayerStack.tables.sessionsTable.tableName,
+      dataLayerStack.tables.noiseCountersTable.tableName,
+    ],
+    existingAlarmArns: [
+      `arn:aws:cloudwatch:${config.region}:${config.account}:alarm:noise-rejection-rate-high-${config.environmentName}`,
+    ],
+    env: {
+      account: config.account,
+      region: config.region,
+    },
+    description: `Airline Voice Agent - Observability Stack (${config.environmentName})`,
+  },
+);
+
+observabilityStack.addDependency(noiseMonitorStack);
+observabilityStack.addDependency(orchestratorStack);
+observabilityStack.addDependency(intelligenceStack);
 
 // CI/CD: GitHub OIDC provider and deploy role (deployed once, not per-environment)
 const githubOidcStack = new GitHubOidcStack(app, 'AirlineVoiceAgent-GitHubOidc', {
