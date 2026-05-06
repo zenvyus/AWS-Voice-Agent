@@ -16,4 +16,5 @@ export const STACKS = {
   intelligence: `AirlineVoiceAgent-Intelligence-${ENV_NAME}`,
   noiseMonitor: `AirlineVoiceAgent-NoiseMonitor-${ENV_NAME}`,
   observability: `AirlineVoiceAgent-Observability-${ENV_NAME}`,
+  disasterRecovery: `AirlineVoiceAgent-DR-${ENV_NAME}`,
 } as const;

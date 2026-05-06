@@ -6,10 +6,11 @@ import { Encryption } from '../constructs/encryption';
 import { DynamoDbTables } from '../constructs/dynamodb-tables';
 import { Aurora } from '../constructs/aurora';
 import { RedisCache } from '../constructs/redis-cache';
-import { StorageBuckets } from '../constructs/storage-buckets';
+import { StorageBuckets, ReplicationConfig } from '../constructs/storage-buckets';
 
 export interface DataLayerStackProps extends cdk.StackProps {
   config: EnvironmentConfig;
+  replication?: ReplicationConfig;
 }
 
 export class DataLayerStack extends cdk.Stack {
@@ -60,6 +61,7 @@ export class DataLayerStack extends cdk.Stack {
       region: config.region,
       dataKey: this.encryption.dataKey,
       transcriptKey: this.encryption.transcriptKey,
+      replication: props.replication,
     });
 
     // Cross-stack exports

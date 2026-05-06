@@ -10,6 +10,7 @@ import { VectorStoreStack } from '../lib/stacks/vector-store-stack';
 import { NoiseMonitorStack } from '../lib/stacks/noise-monitor-stack';
 import { GitHubOidcStack } from '../lib/stacks/github-oidc-stack';
 import { ObservabilityStack } from '../lib/stacks/observability-stack';
+import { DisasterRecoveryStack } from '../lib/stacks/disaster-recovery-stack';
 import { getConfig } from '../lib/config';
 
 const app = new cdk.App();
@@ -30,11 +31,29 @@ const networkingStack = new NetworkingStack(
   },
 );
 
+// DR configuration (deterministic values for S3 cross-region replication)
+const drRegion = 'us-west-2';
+const replicationRoleArn = `arn:aws:iam::${config.account}:role/s3-replication-role-${config.environmentName}`;
+const destinationBucketArn = `arn:aws:s3:::airline-voice-transcripts-dr-${config.account}-${drRegion}`;
+const destinationKmsKeyArn = `arn:aws:kms:${drRegion}:${config.account}:alias/airline-voice-agent-dr-key`;
+
+// Replication is enabled only when DR destination bucket exists (staging/prod).
+// Set CRR_ENABLED=true to activate replication after DR bucket is provisioned.
+const crrEnabled = process.env.CRR_ENABLED === 'true';
+
 const dataLayerStack = new DataLayerStack(
   app,
   `AirlineVoiceAgent-DataLayer-${config.environmentName}`,
   {
     config,
+    replication: crrEnabled
+      ? {
+          roleArn: replicationRoleArn,
+          destinationBucketArn,
+          destinationKmsKeyArn,
+          ruleId: `crr-transcripts-${config.environmentName}`,
+        }
+      : undefined,
     env: {
       account: config.account,
       region: config.region,
@@ -178,6 +197,28 @@ const observabilityStack = new ObservabilityStack(
 observabilityStack.addDependency(noiseMonitorStack);
 observabilityStack.addDependency(orchestratorStack);
 observabilityStack.addDependency(intelligenceStack);
+
+// Disaster Recovery: AWS Backup + S3 Cross-Region Replication
+const disasterRecoveryStack = new DisasterRecoveryStack(
+  app,
+  `AirlineVoiceAgent-DR-${config.environmentName}`,
+  {
+    config,
+    drRegion,
+    transcriptsBucketArn: dataLayerStack.storage.transcriptsBucket.bucketArn,
+    transcriptsBucketKeyArn: dataLayerStack.encryption.transcriptKey.keyArn,
+    destinationBucketArn,
+    destinationKmsKeyArn,
+    env: {
+      account: config.account,
+      region: config.region,
+    },
+    description: `Airline Voice Agent - Disaster Recovery Stack (${config.environmentName})`,
+  },
+);
+
+disasterRecoveryStack.addDependency(dataLayerStack);
+disasterRecoveryStack.addDependency(observabilityStack);
 
 // CI/CD: GitHub OIDC provider and deploy role (deployed once, not per-environment)
 const githubOidcStack = new GitHubOidcStack(app, 'AirlineVoiceAgent-GitHubOidc', {

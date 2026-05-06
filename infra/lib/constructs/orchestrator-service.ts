@@ -159,6 +159,7 @@ export class OrchestratorService extends Construct {
       vpcSubnets: { subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS },
       securityGroups: [serviceSg],
       healthCheckGracePeriod: cdk.Duration.seconds(60),
+      circuitBreaker: { rollback: true },
     });
 
     // NLB Listener + Target Group

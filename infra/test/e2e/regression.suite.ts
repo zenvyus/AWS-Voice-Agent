@@ -26,3 +26,9 @@ import './phase-06-noise-monitor/noise-monitor.test';
 import './phase-07-observability/dashboard.test';
 import './phase-07-observability/alarms.test';
 import './phase-07-observability/logging.test';
+
+// Phase 9: CI/CD & Disaster Recovery
+import './phase-09-cicd-dr/backup.test';
+import './phase-09-cicd-dr/rollback.test';
+import './phase-09-cicd-dr/replication.test';
+import './phase-09-cicd-dr/dr-validation.test';
