@@ -4,6 +4,7 @@ import * as cdk from 'aws-cdk-lib';
 import { NetworkingStack } from '../lib/stacks/networking-stack';
 import { DataLayerStack } from '../lib/stacks/data-layer-stack';
 import { ConnectMediaStack } from '../lib/stacks/connect-media-stack';
+import { OrchestratorStack } from '../lib/stacks/orchestrator-stack';
 import { getConfig } from '../lib/config';
 
 const app = new cdk.App();
@@ -46,5 +47,24 @@ const connectMediaStack = new ConnectMediaStack(app, `AirlineVoiceAgent-ConnectM
 });
 
 connectMediaStack.addDependency(dataLayerStack);
+
+const orchestratorStack = new OrchestratorStack(app, `AirlineVoiceAgent-Orchestrator-${config.environmentName}`, {
+  config,
+  dataKeyArn: dataLayerStack.encryption.dataKey.keyArn,
+  sessionsTableName: dataLayerStack.tables.sessionsTable.tableName,
+  utteranceQueueTableName: dataLayerStack.tables.utteranceQueueTable.tableName,
+  noiseCountersTableName: dataLayerStack.tables.noiseCountersTable.tableName,
+  kvsStreamArn: connectMediaStack.kinesisVideo.stream.attrArn,
+  transcriptsBucketName: dataLayerStack.storage.transcriptsBucket.bucketName,
+  redisEndpoint: dataLayerStack.redis.replicationGroup.attrPrimaryEndPointAddress,
+  auroraEndpoint: dataLayerStack.aurora.cluster.clusterEndpoint.hostname,
+  env: {
+    account: config.account,
+    region: config.region,
+  },
+  description: `Airline Voice Agent - Orchestrator Stack (${config.environmentName})`,
+});
+
+orchestratorStack.addDependency(connectMediaStack);
 
 app.synth();
